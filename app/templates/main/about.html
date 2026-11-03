@@ -1,117 +1,86 @@
+
 {% extends "base.html" %}
 
-{% block title %}À propos du Projet — CampusBook{% endblock %}
+{% block title %}À propos — CampusBook{% endblock %}
 
 {% block content %}
 <div class="container py-5">
     <div class="row justify-content-center">
-        <div class="col-lg-10">
+        <div class="col-lg-8">
+
             <div class="text-center mb-5">
-                <span class="badge badge-soft-primary px-3 py-2 rounded-pill fw-semibold mb-2">Projet Académique</span>
-                <h1 class="fw-bold">CampusBook : Système de Réservation de Salles</h1>
+                <span class="badge bg-primary rounded-pill px-3 py-2 mb-3">
+                    Notre projet
+                </span>
+
+                <h1 class="fw-bold mb-3">
+                    À propos de CampusBook
+                </h1>
+
                 <p class="lead text-muted">
-                    Conception et développement d'une application web modulaire avec Python, Flask, SQLAlchemy et Bootstrap 5.
+                    Une solution simple pour consulter les salles universitaires
+                    et réserver un espace adapté à ses besoins.
                 </p>
             </div>
 
-            <!-- Carte Collaboration & Objectifs -->
-            <div class="card mb-4 shadow-sm border-0">
-                <div class="card-body p-4 p-md-5">
-                    <h4 class="fw-bold text-primary mb-3">
-                        <i class="bi bi-people-fill me-2"></i> Cadre de Collaboration à Deux Étudiantes
-                    </h4>
-                    <p>
-                        Ce projet a été mené en binôme dans le cadre d'un module d'ingénierie logicielle et de travail collaboratif. L'objectif était de concevoir une application complète, robuste et sécurisée en appliquant les méthodologies agiles, le versionnement Git avec branches de fonctionnalités et Pull Requests, et un suivi continu via un tableau Kanban.
-                    </p>
-
-                    <div class="row g-4 mt-2">
-                        <div class="col-md-6">
-                            <div class="p-3 rounded-3 bg-light border">
-                                <h6 class="fw-bold text-dark"><i class="bi bi-person-circle text-primary me-2"></i>Étudiante A — Pôle Salles & Socle</h6>
-                                <ul class="small text-muted mb-0 ps-3">
-                                    <li>Architecture initiale et configuration de l'Application Factory</li>
-                                    <li>Modèle relationnel <code>Room</code></li>
-                                    <li>Moteur de recherche et filtrage multicritères</li>
-                                    <li>Vues publiques et détails des salles</li>
-                                    <li>Tests automatisés du module de gestion des salles</li>
-                                </ul>
-                            </div>
-                        </div>
-
-                        <div class="col-md-6">
-                            <div class="p-3 rounded-3 bg-light border">
-                                <h6 class="fw-bold text-dark"><i class="bi bi-person-circle text-success me-2"></i>Étudiante B — Pôle Réservations & Sécurité</h6>
-                                <ul class="small text-muted mb-0 ps-3">
-                                    <li>Modèle relationnel <code>Reservation</code> et contraintes d'intégrité</li>
-                                    <li>Service métier et algorithme de détection des conflits horaires</li>
-                                    <li>Formulaires Flask-WTF et validation serveur</li>
-                                    <li>Espace personnel étudiant et tableau de bord administrateur</li>
-                                    <li>Tests automatisés des conflits et permissions d'accès</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Architecture Technique -->
-            <div class="card mb-4 shadow-sm border-0">
-                <div class="card-body p-4 p-md-5">
-                    <h4 class="fw-bold text-primary mb-3">
-                        <i class="bi bi-diagram-3-fill me-2"></i> Architecture Logicielle & Choix Techniques
-                    </h4>
-                    <p class="text-muted">
-                        L'application adopte une architecture modulaire basée sur le patron <strong>Application Factory</strong> et les <strong>Blueprints</strong> Flask pour assurer une scalabilité et une séparation stricte des responsabilités :
-                    </p>
-
-                    <div class="row g-3">
-                        <div class="col-sm-6 col-md-4">
-                            <div class="border rounded p-3 h-100">
-                                <div class="fw-bold text-dark mb-1">Backend Python 3</div>
-                                <div class="small text-muted">Flask 3, Application Factory, décorateurs d'authentification et gestion d'erreurs HTTP.</div>
-                            </div>
-                        </div>
-                        <div class="col-sm-6 col-md-4">
-                            <div class="border rounded p-3 h-100">
-                                <div class="fw-bold text-dark mb-1">ORM & Base de données</div>
-                                <div class="small text-muted">SQLAlchemy avec migrations Alembic/Flask-Migrate. Index composites pour l'optimisation des requêtes.</div>
-                            </div>
-                        </div>
-                        <div class="col-sm-6 col-md-4">
-                            <div class="border rounded p-3 h-100">
-                                <div class="fw-bold text-dark mb-1">Sécurité & Sessions</div>
-                                <div class="small text-muted">Flask-Login, hachage sécurisé des mots de passe (PBKDF2/SHA256) et protection CSRF Flask-WTF.</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <h5 class="fw-bold text-dark mt-4 mb-2">Algorithme de Détection des Conflits Horaires</h5>
-                    <p class="small text-muted mb-2">
-                        Pour deux intervalles de temps <code>[début1, fin1]</code> et <code>[début2, fin2]</code> sur une même salle et une même date, il y a conflit si et seulement si :
-                    </p>
-                    <div class="bg-dark text-white p-3 rounded font-monospace small mb-3">
-                        début1 &lt; fin2 ET fin1 &gt; début2
-                    </div>
-                    <p class="small text-muted mb-0">
-                        Cette condition mathématique garantit qu'un créneau <code>10:00 - 11:00</code> n'empêche pas un créneau <code>11:00 - 12:00</code> d'être réservé dans la même salle, tout en interdisant formellement tout chevauchement partiel ou total.
-                    </p>
-                </div>
-            </div>
-
-            <!-- Workflow Git & Kanban -->
-            <div class="card shadow-sm border-0">
-                <div class="card-body p-4 p-md-5">
-                    <h4 class="fw-bold text-primary mb-3">
-                        <i class="bi bi-git me-2"></i> Méthodologie Git & Suivi Kanban
-                    </h4>
-                    <p class="text-muted">
-                        Le cycle de développement s'est appuyé sur la convention <em>Conventional Commits</em> (<code>feat:</code>, <code>fix:</code>, <code>test:</code>, <code>docs:</code>, <code>chore:</code>) et une politique de branches dédiées, interdisant les commits directs sur <code>main</code> pour les fonctionnalités.
-                    </p>
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body p-4">
+                    <h4 class="fw-bold mb-3">Notre objectif</h4>
                     <p class="text-muted mb-0">
-                        Le tableau Kanban comporte 4 colonnes (<strong>To do</strong>, <strong>In progress</strong>, <strong>Review</strong>, <strong>Done</strong>) correspondant aux 15 issues planifiées et réparties entre les deux collaboratrices.
+                        CampusBook est une application web conçue pour faciliter
+                        la gestion et la réservation des salles universitaires.
+                        Elle permet aux utilisateurs de consulter les salles
+                        disponibles et de gérer leurs réservations plus facilement.
                     </p>
                 </div>
             </div>
+
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body p-4">
+                    <h4 class="fw-bold mb-3">Fonctionnalités principales</h4>
+
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-3">
+                            <i class="bi bi-search text-primary me-2"></i>
+                            Consultation et recherche des salles
+                        </li>
+                        <li class="mb-3">
+                            <i class="bi bi-calendar-check text-primary me-2"></i>
+                            Réservation des créneaux disponibles
+                        </li>
+                        <li class="mb-3">
+                            <i class="bi bi-pencil-square text-primary me-2"></i>
+                            Modification et annulation des réservations
+                        </li>
+                        <li>
+                            <i class="bi bi-shield-check text-primary me-2"></i>
+                            Gestion sécurisée des accès
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <h4 class="fw-bold mb-3">Technologies utilisées</h4>
+
+                    <div class="d-flex flex-wrap gap-2">
+                        <span class="badge bg-light text-dark border">Python</span>
+                        <span class="badge bg-light text-dark border">Flask</span>
+                        <span class="badge bg-light text-dark border">SQLAlchemy</span>
+                        <span class="badge bg-light text-dark border">Bootstrap 5</span>
+                        <span class="badge bg-light text-dark border">SQLite</span>
+                        <span class="badge bg-light text-dark border">Git & GitHub</span>
+                    </div>
+
+                    <p class="text-muted mt-3 mb-0">
+                        Ce projet est réalisé dans un cadre académique afin
+                        de mettre en pratique le développement web, la gestion
+                        de bases de données et le travail collaboratif.
+                    </p>
+                </div>
+            </div>
+
         </div>
     </div>
 </div>
