@@ -18,7 +18,7 @@ Ce projet a été conçu et réalisé par deux étudiantes dans le cadre d'un pr
 
 ---
 
-## 2. Objectifs du Projet
+## 2. les Objectifs du Projet
 
 - **Fonctionnel** : Fournir une plateforme opérationnelle, fiable, avec détection mathématique stricte des chevauchements d'horaires et gestion des rôles.
 - **Architectural** : Adopter une séparation stricte des responsabilités (Application Factory, Blueprints, Modèles SQLAlchemy, Formulaires Flask-WTF, Services métier transactionnels).
