@@ -79,3 +79,4 @@ def detail(room_id: int):
         room=room,
         upcoming_reservations=upcoming_reservations
     )
+# Module developpe et optimise par Wissal El Haydani
