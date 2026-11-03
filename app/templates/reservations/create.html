@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block title %}Réserver une Salle — CampusBook{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="d-flex align-items-center mb-3">
+                <a href="{{ url_for('rooms.index') }}" class="text-decoration-none text-muted small me-3">
+                    <i class="bi bi-arrow-left me-1"></i> Retour aux salles
+                </a>
+            </div>
+
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white py-3 border-bottom">
+                    <div class="d-flex align-items-center">
+                        <div class="kpi-icon-wrap bg-primary-subtle text-primary me-3">
+                            <i class="bi bi-calendar-plus"></i>
+                        </div>
+                        <div>
+                            <h4 class="fw-bold mb-0">Formulaire de Réservation</h4>
+                            <small class="text-muted">Sélectionnez votre créneau selon les disponibilités</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-body p-4 p-md-5">
+                    <form method="POST" novalidate>
+                        {{ form.hidden_tag() }}
+
+                        <div class="mb-4">
+                            {{ form.room_id.label(class="form-label") }}
+                            {{ form.room_id(class="form-select form-select-lg" + (" is-invalid" if form.room_id.errors else "")) }}
+                            {% for error in form.room_id.errors %}
+                                <div class="text-danger small mt-1">{{ error }}</div>
+                            {% endfor %}
+                            <div class="form-text small">Seules les salles actives de l'université sont affichées.</div>
+                        </div>
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-4">
+                                {{ form.reservation_date.label(class="form-label") }}
+                                {{ form.reservation_date(class="form-control" + (" is-invalid" if form.reservation_date.errors else "")) }}
+                                {% for error in form.reservation_date.errors %}
+                                    <div class="text-danger small mt-1">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+
+                            <div class="col-md-4">
+                                {{ form.start_time.label(class="form-label") }}
+                                {{ form.start_time(class="form-control" + (" is-invalid" if form.start_time.errors else ""), id="start_time") }}
+                                {% for error in form.start_time.errors %}
+                                    <div class="text-danger small mt-1">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+
+                            <div class="col-md-4">
+                                {{ form.end_time.label(class="form-label") }}
+                                {{ form.end_time(class="form-control" + (" is-invalid" if form.end_time.errors else ""), id="end_time") }}
+                                {% for error in form.end_time.errors %}
+                                    <div class="text-danger small mt-1">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+
+                            <div class="col-12">
+                                <div id="duration_preview" class="small"></div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            {{ form.participants_count.label(class="form-label") }}
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i class="bi bi-people"></i></span>
+                                {{ form.participants_count(class="form-control" + (" is-invalid" if form.participants_count.errors else "")) }}
+                            </div>
+                            {% for error in form.participants_count.errors %}
+                                <div class="text-danger small mt-1">{{ error }}</div>
+                            {% endfor %}
+                            <div class="form-text small">Le nombre ne doit pas dépasser la capacité autorisée de la salle.</div>
+                        </div>
+
+                        <div class="mb-4">
+                            {{ form.purpose.label(class="form-label") }}
+                            {{ form.purpose(class="form-control" + (" is-invalid" if form.purpose.errors else "")) }}
+                            {% for error in form.purpose.errors %}
+                                <div class="text-danger small mt-1">{{ error }}</div>
+                            {% endfor %}
+                            <div class="form-text small">Indiquez l'objet de l'activité (ex: travail de groupe, répétition de soutenance, réunion d'association).</div>
+                        </div>
+
+                        <div class="alert alert-info py-2 small d-flex align-items-center mb-4">
+                            <i class="bi bi-info-circle-fill me-2 fs-5"></i>
+                            <div>
+                                Les créneaux autorisés sont compris entre <strong>{{ opening_time_str }}</strong> et <strong>{{ closing_time_str }}</strong>. 
+                                Les conflits horaires sont contrôlés au moment de la validation.
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-2">
+                            <a href="{{ url_for('rooms.index') }}" class="btn btn-outline-secondary px-4">Annuler</a>
+                            {{ form.submit(class="btn btn-accent px-4 py-2 fw-semibold") }}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

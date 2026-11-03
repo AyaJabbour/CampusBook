@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+
+{% block title %}Tableau de Bord Administrateur — CampusBook{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- En-tête -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
+        <div>
+            <div class="d-inline-flex align-items-center badge bg-danger text-white px-3 py-1 rounded-pill mb-2">
+                <i class="bi bi-shield-lock-fill me-1"></i> Espace Gestion Campus
+            </div>
+            <h1 class="fw-bold mb-1">Tableau de Bord Administrateur</h1>
+            <p class="text-muted mb-0">Supervisez l'ensemble des salles, des utilisateurs et des plannings de réservation.</p>
+        </div>
+        <div class="mt-3 mt-md-0 d-flex gap-2">
+            <a href="{{ url_for('admin.create_room') }}" class="btn btn-accent fw-semibold">
+                <i class="bi bi-plus-square me-1"></i> Ajouter une salle
+            </a>
+            <a href="{{ url_for('admin.rooms') }}" class="btn btn-outline-secondary">
+                <i class="bi bi-grid-3x3-gap me-1"></i> Gérer les salles
+            </a>
+        </div>
+    </div>
+
+    <!-- Cartes KPI Globales -->
+    <div class="row g-3 mb-4">
+        <div class="col-sm-6 col-lg-3">
+            <div class="kpi-card kpi-primary">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="text-muted small text-uppercase tracking-wider fw-semibold">Salles Actives</div>
+                        <div class="display-6 fw-bold text-primary">{{ total_active_rooms }}</div>
+                        <small class="text-muted">({{ total_inactive_rooms }} inactives)</small>
+                    </div>
+                    <div class="kpi-icon-wrap bg-primary-subtle text-primary">
+                        <i class="bi bi-building"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-lg-3">
+            <div class="kpi-card kpi-info">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="text-muted small text-uppercase tracking-wider fw-semibold">Utilisateurs</div>
+                        <div class="display-6 fw-bold text-info">{{ total_users }}</div>
+                        <small class="text-muted">Inscrits au total</small>
+                    </div>
+                    <div class="kpi-icon-wrap bg-info-subtle text-info">
+                        <i class="bi bi-people"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-lg-3">
+            <div class="kpi-card kpi-success">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="text-muted small text-uppercase tracking-wider fw-semibold">À venir</div>
+                        <div class="display-6 fw-bold text-success">{{ upcoming_reservations_count }}</div>
+                        <small class="text-muted">Prochains créneaux</small>
+                    </div>
+                    <div class="kpi-icon-wrap bg-success-subtle text-success">
+                        <i class="bi bi-calendar-check"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-lg-3">
+            <div class="kpi-card kpi-warning">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="text-muted small text-uppercase tracking-wider fw-semibold">Réservations</div>
+                        <div class="display-6 fw-bold text-dark">{{ total_reservations }}</div>
+                        <small class="text-muted">Créées depuis l'origine</small>
+                    </div>
+                    <div class="kpi-icon-wrap bg-warning-subtle text-warning">
+                        <i class="bi bi-journal-bookmark"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tableau des Réservations Récentes -->
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+            <h5 class="card-title fw-bold mb-0">
+                <i class="bi bi-clock-history me-2 text-primary"></i> Réservations Récentes du Campus
+            </h5>
+            <a href="{{ url_for('admin.reservations') }}" class="btn btn-outline-primary btn-sm">
+                Voir toutes les réservations <i class="bi bi-arrow-right ms-1"></i>
+            </a>
+        </div>
+
+        <div class="card-body p-0">
+            {% if recent_reservations %}
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Utilisateur</th>
+                                <th>Salle</th>
+                                <th>Date & Horaires</th>
+                                <th>Participants</th>
+                                <th>Statut</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for res in recent_reservations %}
+                                <tr>
+                                    <td><span class="text-muted">#{{ res.id }}</span></td>
+                                    <td>
+                                        <div class="fw-semibold">{{ res.user.full_name }}</div>
+                                        <small class="text-muted">{{ res.user.email }}</small>
+                                    </td>
+                                    <td>
+                                        <div class="fw-semibold">{{ res.room.name }}</div>
+                                        <small class="text-muted">{{ res.room.building }} ({{ res.room.room_number }})</small>
+                                    </td>
+                                    <td>
+                                        <div>{{ res.reservation_date.strftime('%d/%m/%Y') }}</div>
+                                        <small class="text-muted">{{ res.start_time.strftime('%H:%M') }} - {{ res.end_time.strftime('%H:%M') }}</small>
+                                    </td>
+                                    <td>{{ res.participants_count }} pers.</td>
+                                    <td>
+                                        {% if res.is_confirmed %}
+                                            <span class="badge badge-soft-success">Confirmée</span>
+                                        {% else %}
+                                            <span class="badge badge-soft-danger">Annulée</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-end">
+                                        <div class="btn-group btn-group-sm">
+                                            <a href="{{ url_for('reservations.detail', reservation_id=res.id) }}" class="btn btn-outline-secondary" title="Détails">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                            {% if res.is_confirmed %}
+                                                <form method="POST" action="{{ url_for('admin.cancel_reservation', reservation_id=res.id) }}" class="confirm-cancel d-inline">
+                                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                                    <button type="submit" class="btn btn-outline-danger" title="Annulation administrative">
+                                                        <i class="bi bi-x-circle"></i>
+                                                    </button>
+                                                </form>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="p-5 text-center text-muted">
+                    <p class="mb-0">Aucune réservation enregistrée sur le système.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

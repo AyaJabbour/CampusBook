@@ -1,0 +1,36 @@
+# Environnements virtuels
+.venv/
+venv/
+ENV/
+env/
+
+# Fichiers compilés Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Base de données SQLite locale
+*.sqlite
+*.sqlite3
+*.db
+campusbook.db
+
+# Fichiers d'environnement & secrets
+.env
+
+# Fichiers de test et couverture
+.pytest_cache/
+.coverage
+htmlcov/
+
+# IDE et éditeurs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Builds et distributions
+build/
+dist/
+*.egg-info/
+instance/

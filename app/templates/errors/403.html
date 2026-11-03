@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}Accès Refusé (403) — CampusBook{% endblock %}
+
+{% block content %}
+<div class="container py-5 text-center">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card p-5 border-0 shadow-sm">
+                <div class="display-1 fw-bold text-danger mb-2">403</div>
+                <h3 class="fw-bold mb-3">Accès Non Autorisé</h3>
+                <p class="text-muted mb-4">
+                    Vous n'avez pas les autorisations nécessaires pour accéder à cette ressource. Si vous essayez d'accéder à l'espace d'administration ou à la réservation privée d'un autre étudiant, cet accès est formellement bloqué.
+                </p>
+                <div>
+                    <a href="{{ url_for('main.index') }}" class="btn btn-accent px-4 py-2 fw-semibold">
+                        <i class="bi bi-house-door me-1"></i> Retour à l'accueil
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

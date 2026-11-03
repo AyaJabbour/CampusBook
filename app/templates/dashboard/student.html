@@ -1,0 +1,245 @@
+{% extends "base.html" %}
+
+{% block title %}Mon Espace Étudiant — CampusBook{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- En-tête -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
+        <div>
+            <h1 class="fw-bold mb-1">Espace Étudiant</h1>
+            <p class="text-muted mb-0">Bienvenue, <strong>{{ current_user.full_name }}</strong>. Suivez et gérez l'ensemble de vos réservations.</p>
+        </div>
+        <div class="mt-3 mt-md-0">
+            <a href="{{ url_for('reservations.create') }}" class="btn btn-accent px-4 py-2 fw-semibold">
+                <i class="bi bi-plus-circle me-2"></i> Nouvelle réservation
+            </a>
+        </div>
+    </div>
+
+    <!-- Cartes KPI Étudiant -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="kpi-card kpi-primary">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="text-muted small text-uppercase tracking-wider fw-semibold">À venir</div>
+                        <div class="display-6 fw-bold text-primary">{{ total_upcoming }}</div>
+                    </div>
+                    <div class="kpi-icon-wrap bg-primary-subtle text-primary">
+                        <i class="bi bi-calendar-check"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="kpi-card kpi-info">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="text-muted small text-uppercase tracking-wider fw-semibold">Historique passé</div>
+                        <div class="display-6 fw-bold text-info">{{ total_past }}</div>
+                    </div>
+                    <div class="kpi-icon-wrap bg-info-subtle text-info">
+                        <i class="bi bi-clock-history"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="kpi-card kpi-warning">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="text-muted small text-uppercase tracking-wider fw-semibold">Annulées</div>
+                        <div class="display-6 fw-bold text-muted">{{ total_cancelled }}</div>
+                    </div>
+                    <div class="kpi-icon-wrap bg-warning-subtle text-warning">
+                        <i class="bi bi-x-circle"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Onglets des Réservations -->
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-white p-3 border-bottom">
+            <ul class="nav nav-pills" id="reservationTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active fw-semibold" id="upcoming-tab" data-bs-toggle="tab" data-bs-target="#upcoming" type="button" role="tab">
+                        <i class="bi bi-calendar-event me-1"></i> Réservations à venir ({{ total_upcoming }})
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link fw-semibold" id="past-tab" data-bs-toggle="tab" data-bs-target="#past" type="button" role="tab">
+                        <i class="bi bi-archive me-1"></i> Historique ({{ total_past }})
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link fw-semibold" id="cancelled-tab" data-bs-toggle="tab" data-bs-target="#cancelled" type="button" role="tab">
+                        <i class="bi bi-x-octagon me-1"></i> Annulées ({{ total_cancelled }})
+                    </button>
+                </li>
+            </ul>
+        </div>
+
+        <div class="card-body p-0">
+            <div class="tab-content" id="reservationTabsContent">
+                <!-- 1. Onglet Réservations à Venir -->
+                <div class="tab-pane fade show active" id="upcoming" role="tabpanel">
+                    {% if upcoming_reservations %}
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Créneau</th>
+                                        <th>Salle & Bâtiment</th>
+                                        <th>Participants</th>
+                                        <th>Motif</th>
+                                        <th class="text-end">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for res in upcoming_reservations %}
+                                        <tr>
+                                            <td class="fw-semibold text-primary">
+                                                {{ res.reservation_date.strftime('%d/%m/%Y') }}
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-light text-dark border">
+                                                    {{ res.start_time.strftime('%H:%M') }} - {{ res.end_time.strftime('%H:%M') }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <div class="fw-semibold">{{ res.room.name }}</div>
+                                                <small class="text-muted">{{ res.room.building }} ({{ res.room.room_number }})</small>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-secondary-subtle text-secondary">
+                                                    {{ res.participants_count }} pers.
+                                                </span>
+                                            </td>
+                                            <td class="text-muted small">{{ res.purpose|truncate(35) }}</td>
+                                            <td class="text-end">
+                                                <div class="btn-group btn-group-sm">
+                                                    <a href="{{ url_for('reservations.detail', reservation_id=res.id) }}" class="btn btn-outline-secondary" title="Consulter">
+                                                        <i class="bi bi-eye"></i>
+                                                    </a>
+                                                    {% if res.can_be_modified %}
+                                                        <a href="{{ url_for('reservations.edit', reservation_id=res.id) }}" class="btn btn-outline-warning" title="Modifier">
+                                                            <i class="bi bi-pencil"></i>
+                                                        </a>
+                                                    {% endif %}
+                                                    {% if res.can_be_cancelled %}
+                                                        <form method="POST" action="{{ url_for('reservations.cancel', reservation_id=res.id) }}" class="confirm-cancel d-inline">
+                                                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                                            <button type="submit" class="btn btn-outline-danger" title="Annuler">
+                                                                <i class="bi bi-x-circle"></i>
+                                                            </button>
+                                                        </form>
+                                                    {% endif %}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="p-5 text-center text-muted">
+                            <i class="bi bi-calendar2-plus display-4 text-primary d-block mb-3"></i>
+                            <h5>Aucune réservation à venir</h5>
+                            <p class="small mb-3">Besoin d'une salle pour travailler avec votre groupe ?</p>
+                            <a href="{{ url_for('reservations.create') }}" class="btn btn-accent btn-sm px-3">
+                                Réserver une salle maintenant
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- 2. Onglet Historique Passé -->
+                <div class="tab-pane fade" id="past" role="tabpanel">
+                    {% if past_reservations %}
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Créneau</th>
+                                        <th>Salle</th>
+                                        <th>Motif</th>
+                                        <th>Statut</th>
+                                        <th class="text-end">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for res in past_reservations %}
+                                        <tr>
+                                            <td class="fw-semibold">{{ res.reservation_date.strftime('%d/%m/%Y') }}</td>
+                                            <td>{{ res.start_time.strftime('%H:%M') }} - {{ res.end_time.strftime('%H:%M') }}</td>
+                                            <td>{{ res.room.name }} ({{ res.room.room_number }})</td>
+                                            <td class="text-muted small">{{ res.purpose|truncate(40) }}</td>
+                                            <td><span class="badge badge-soft-secondary">Passée</span></td>
+                                            <td class="text-end">
+                                                <a href="{{ url_for('reservations.detail', reservation_id=res.id) }}" class="btn btn-outline-secondary btn-sm">
+                                                    Détails
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="p-5 text-center text-muted">
+                            <p class="mb-0">Aucun historique de réservation passée pour le moment.</p>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- 3. Onglet Réservations Annulées -->
+                <div class="tab-pane fade" id="cancelled" role="tabpanel">
+                    {% if cancelled_reservations %}
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Date prévue</th>
+                                        <th>Créneau</th>
+                                        <th>Salle</th>
+                                        <th>Motif initial</th>
+                                        <th>Statut</th>
+                                        <th class="text-end">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for res in cancelled_reservations %}
+                                        <tr class="text-muted">
+                                            <td>{{ res.reservation_date.strftime('%d/%m/%Y') }}</td>
+                                            <td>{{ res.start_time.strftime('%H:%M') }} - {{ res.end_time.strftime('%H:%M') }}</td>
+                                            <td>{{ res.room.name }}</td>
+                                            <td class="small">{{ res.purpose|truncate(40) }}</td>
+                                            <td><span class="badge badge-soft-danger">Annulée</span></td>
+                                            <td class="text-end">
+                                                <a href="{{ url_for('reservations.detail', reservation_id=res.id) }}" class="btn btn-outline-secondary btn-sm">
+                                                    Détails
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="p-5 text-center text-muted">
+                            <p class="mb-0">Aucune réservation annulée.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

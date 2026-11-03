@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block title %}Toutes les Réservations — Administration CampusBook{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
+        <div>
+            <div class="d-inline-flex align-items-center badge bg-danger text-white px-3 py-1 rounded-pill mb-2">
+                <i class="bi bi-shield-lock-fill me-1"></i> Administration
+            </div>
+            <h1 class="fw-bold mb-1">Toutes les Réservations du Campus</h1>
+            <p class="text-muted mb-0">Consultez, filtrez et régulez les réservations de l'université.</p>
+        </div>
+        <div class="mt-3 mt-md-0 d-flex gap-2">
+            <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left me-1"></i> Tableau de bord
+            </a>
+        </div>
+    </div>
+
+    <!-- Filtres rapides par statut -->
+    <div class="mb-3 d-flex gap-2">
+        <a href="{{ url_for('admin.reservations', status='all') }}" class="btn btn-sm {% if current_status == 'all' %}btn-primary{% else %}btn-outline-secondary{% endif %}">
+            Toutes les réservations ({{ reservations|length }})
+        </a>
+        <a href="{{ url_for('admin.reservations', status='confirmed') }}" class="btn btn-sm {% if current_status == 'confirmed' %}btn-success{% else %}btn-outline-secondary{% endif %}">
+            Confirmées uniquement
+        </a>
+        <a href="{{ url_for('admin.reservations', status='cancelled') }}" class="btn btn-sm {% if current_status == 'cancelled' %}btn-danger{% else %}btn-outline-secondary{% endif %}">
+            Annulées uniquement
+        </a>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
+            {% if reservations %}
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Étudiant</th>
+                                <th>Salle</th>
+                                <th>Date & Horaires</th>
+                                <th>Participants</th>
+                                <th>Motif</th>
+                                <th>Statut</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for res in reservations %}
+                                <tr>
+                                    <td><span class="text-muted">#{{ res.id }}</span></td>
+                                    <td>
+                                        <div class="fw-semibold">{{ res.user.full_name }}</div>
+                                        <small class="text-muted">{{ res.user.email }}</small>
+                                    </td>
+                                    <td>
+                                        <div class="fw-semibold">{{ res.room.name }}</div>
+                                        <small class="text-muted">{{ res.room.building }} ({{ res.room.room_number }})</small>
+                                    </td>
+                                    <td>
+                                        <div class="fw-semibold">{{ res.reservation_date.strftime('%d/%m/%Y') }}</div>
+                                        <small class="text-muted">{{ res.start_time.strftime('%H:%M') }} - {{ res.end_time.strftime('%H:%M') }}</small>
+                                    </td>
+                                    <td>{{ res.participants_count }} pers.</td>
+                                    <td class="text-muted small">{{ res.purpose|truncate(35) }}</td>
+                                    <td>
+                                        {% if res.is_confirmed %}
+                                            <span class="badge badge-soft-success">Confirmée</span>
+                                        {% else %}
+                                            <span class="badge badge-soft-danger">Annulée</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-end">
+                                        <div class="btn-group btn-group-sm">
+                                            <a href="{{ url_for('reservations.detail', reservation_id=res.id) }}" class="btn btn-outline-secondary" title="Détails complets">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                            {% if res.is_confirmed %}
+                                                <form method="POST" action="{{ url_for('admin.cancel_reservation', reservation_id=res.id) }}" class="confirm-cancel d-inline">
+                                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                                    <button type="submit" class="btn btn-outline-danger" title="Annulation administrative">
+                                                        <i class="bi bi-x-circle"></i>
+                                                    </button>
+                                                </form>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="p-5 text-center text-muted">
+                    <p class="mb-0">Aucune réservation trouvée pour ce critère.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

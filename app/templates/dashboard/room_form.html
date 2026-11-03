@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }} — Administration CampusBook{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="mb-3">
+                <a href="{{ url_for('admin.rooms') }}" class="text-decoration-none text-muted small">
+                    <i class="bi bi-arrow-left me-1"></i> Retour à la liste des salles
+                </a>
+            </div>
+
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white py-3 border-bottom">
+                    <h4 class="fw-bold mb-0 text-primary">
+                        <i class="bi bi-building me-2"></i> {{ title }}
+                    </h4>
+                </div>
+
+                <div class="card-body p-4 p-md-5">
+                    <form method="POST" novalidate>
+                        {{ form.hidden_tag() }}
+
+                        <div class="mb-3">
+                            {{ form.name.label(class="form-label") }}
+                            {{ form.name(class="form-control" + (" is-invalid" if form.name.errors else "")) }}
+                            {% for error in form.name.errors %}
+                                <div class="text-danger small mt-1">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                {{ form.building.label(class="form-label") }}
+                                {{ form.building(class="form-control" + (" is-invalid" if form.building.errors else "")) }}
+                                {% for error in form.building.errors %}
+                                    <div class="text-danger small mt-1">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+
+                            <div class="col-md-6">
+                                {{ form.room_number.label(class="form-label") }}
+                                {{ form.room_number(class="form-control" + (" is-invalid" if form.room_number.errors else "")) }}
+                                {% for error in form.room_number.errors %}
+                                    <div class="text-danger small mt-1">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                {{ form.capacity.label(class="form-label") }}
+                                {{ form.capacity(class="form-control" + (" is-invalid" if form.capacity.errors else "")) }}
+                                {% for error in form.capacity.errors %}
+                                    <div class="text-danger small mt-1">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+
+                            <div class="col-md-6">
+                                {{ form.image_filename.label(class="form-label") }}
+                                {{ form.image_filename(class="form-control" + (" is-invalid" if form.image_filename.errors else "")) }}
+                                {% for error in form.image_filename.errors %}
+                                    <div class="text-danger small mt-1">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.equipment.label(class="form-label") }}
+                            {{ form.equipment(class="form-control" + (" is-invalid" if form.equipment.errors else "")) }}
+                            {% for error in form.equipment.errors %}
+                                <div class="text-danger small mt-1">{{ error }}</div>
+                            {% endfor %}
+                            <div class="form-text small">Séparez chaque équipement par une virgule.</div>
+                        </div>
+
+                        <div class="mb-4">
+                            {{ form.description.label(class="form-label") }}
+                            {{ form.description(class="form-control" + (" is-invalid" if form.description.errors else "")) }}
+                            {% for error in form.description.errors %}
+                                <div class="text-danger small mt-1">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="mb-4 form-check form-switch">
+                            {{ form.is_active(class="form-check-input") }}
+                            {{ form.is_active.label(class="form-check-label fw-semibold") }}
+                            <div class="form-text small">Une salle inactive n'apparaît pas dans la liste des choix de réservation pour les étudiants.</div>
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-2 pt-2 border-top">
+                            <a href="{{ url_for('admin.rooms') }}" class="btn btn-outline-secondary px-4">Annuler</a>
+                            {{ form.submit(class="btn btn-accent px-4 py-2 fw-semibold") }}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}Inscription Étudiant — CampusBook{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-7 col-lg-5">
+            <div class="card shadow border-0">
+                <div class="card-body p-4 p-md-5">
+                    <div class="text-center mb-4">
+                        <div class="brand-icon mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; font-size: 1.5rem;">
+                            <i class="bi bi-person-plus-fill"></i>
+                        </div>
+                        <h3 class="fw-bold mb-1">Inscription Étudiant</h3>
+                        <p class="text-muted small">Créez votre compte pour réserver des salles</p>
+                    </div>
+
+                    <form method="POST" novalidate>
+                        {{ form.hidden_tag() }}
+
+                        <div class="mb-3">
+                            {{ form.full_name.label(class="form-label") }}
+                            <div class="input-group">
+                                <span class="input-group-text bg-light text-muted"><i class="bi bi-person"></i></span>
+                                {{ form.full_name(class="form-control" + (" is-invalid" if form.full_name.errors else "")) }}
+                            </div>
+                            {% for error in form.full_name.errors %}
+                                <div class="text-danger small mt-1">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.email.label(class="form-label") }}
+                            <div class="input-group">
+                                <span class="input-group-text bg-light text-muted"><i class="bi bi-envelope"></i></span>
+                                {{ form.email(class="form-control" + (" is-invalid" if form.email.errors else "")) }}
+                            </div>
+                            {% for error in form.email.errors %}
+                                <div class="text-danger small mt-1">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.password.label(class="form-label") }}
+                            <div class="input-group">
+                                <span class="input-group-text bg-light text-muted"><i class="bi bi-lock"></i></span>
+                                {{ form.password(class="form-control" + (" is-invalid" if form.password.errors else "")) }}
+                            </div>
+                            {% for error in form.password.errors %}
+                                <div class="text-danger small mt-1">{{ error }}</div>
+                            {% endfor %}
+                            <div class="form-text small">Au moins 6 caractères.</div>
+                        </div>
+
+                        <div class="mb-4">
+                            {{ form.password_confirm.label(class="form-label") }}
+                            <div class="input-group">
+                                <span class="input-group-text bg-light text-muted"><i class="bi bi-shield-check"></i></span>
+                                {{ form.password_confirm(class="form-control" + (" is-invalid" if form.password_confirm.errors else "")) }}
+                            </div>
+                            {% for error in form.password_confirm.errors %}
+                                <div class="text-danger small mt-1">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="d-grid mb-3">
+                            {{ form.submit(class="btn btn-accent py-2 fw-semibold") }}
+                        </div>
+                    </form>
+
+                    <div class="text-center small text-muted">
+                        Vous possédez déjà un compte ? 
+                        <a href="{{ url_for('auth.login') }}" class="fw-semibold text-decoration-none">Connectez-vous</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

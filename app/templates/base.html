@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="fr" class="h-100">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Accueil{% endblock %} — CampusBook</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="d-flex flex-column h-100 bg-light">
+
+    <!-- Barre de Navigation Principale -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-campus-navy sticky-top shadow-sm py-2">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center fw-bold fs-4" href="{{ url_for('main.index') }}">
+                <span class="brand-icon me-2 d-flex align-items-center justify-content-center">
+                    <i class="bi bi-mortarboard-fill"></i>
+                </span>
+                <span>Campus<span class="text-accent">Book</span></span>
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" aria-controls="navbarMain" aria-expanded="false" aria-label="Menu navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarMain">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-3">
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'main.index' %}active{% endif %}" href="{{ url_for('main.index') }}">
+                            <i class="bi bi-house-door me-1"></i> Accueil
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.blueprint == 'rooms' %}active{% endif %}" href="{{ url_for('rooms.index') }}">
+                            <i class="bi bi-door-open me-1"></i> Explorer les salles
+                        </a>
+                    </li>
+                    {% if current_user.is_authenticated and not current_user.is_admin %}
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'reservations.dashboard' %}active{% endif %}" href="{{ url_for('reservations.dashboard') }}">
+                            <i class="bi bi-calendar-check me-1"></i> Mes réservations
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-warning fw-semibold" href="{{ url_for('reservations.create') }}">
+                            <i class="bi bi-plus-circle me-1"></i> Réserver une salle
+                        </a>
+                    </li>
+                    {% endif %}
+                    {% if current_user.is_authenticated and current_user.is_admin %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle text-warning fw-semibold" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-shield-lock me-1"></i> Espace Administrateur
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-dark shadow">
+                            <li><a class="dropdown-item" href="{{ url_for('admin.dashboard') }}"><i class="bi bi-speedometer2 me-2"></i>Tableau de bord</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('admin.rooms') }}"><i class="bi bi-grid-3x3-gap me-2"></i>Gestion des salles</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('admin.create_room') }}"><i class="bi bi-plus-square me-2"></i>Ajouter une salle</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{{ url_for('admin.reservations') }}"><i class="bi bi-calendar-range me-2"></i>Toutes les réservations</a></li>
+                        </ul>
+                    </li>
+                    {% endif %}
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'main.about' %}active{% endif %}" href="{{ url_for('main.about') }}">
+                            <i class="bi bi-info-circle me-1"></i> À propos
+                        </a>
+                    </li>
+                </ul>
+
+                <!-- Menu Utilisateur / Connexion -->
+                <ul class="navbar-nav ms-auto align-items-lg-center">
+                    {% if current_user.is_authenticated %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle d-flex align-items-center text-white" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <span class="user-avatar me-2 d-flex align-items-center justify-content-center">
+                                    {{ current_user.full_name[:2].upper() }}
+                                </span>
+                                <div>
+                                    <div class="fw-semibold lh-1">{{ current_user.full_name }}</div>
+                                    <small class="text-white-50 fs-xs">
+                                        {% if current_user.is_admin %}Administrateur{% else %}Étudiant{% endif %}
+                                    </small>
+                                </div>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end shadow">
+                                {% if current_user.is_admin %}
+                                <li><a class="dropdown-item" href="{{ url_for('admin.dashboard') }}"><i class="bi bi-speedometer2 me-2"></i>Administration</a></li>
+                                {% else %}
+                                <li><a class="dropdown-item" href="{{ url_for('reservations.dashboard') }}"><i class="bi bi-person-badge me-2"></i>Mon espace étudiant</a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('reservations.create') }}"><i class="bi bi-calendar-plus me-2"></i>Nouvelle réservation</a></li>
+                                {% endif %}
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" href="{{ url_for('auth.logout') }}"><i class="bi bi-box-arrow-right me-2"></i>Déconnexion</a></li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item me-2">
+                            <a class="btn btn-outline-light btn-sm px-3" href="{{ url_for('auth.login') }}">
+                                <i class="bi bi-box-arrow-in-right me-1"></i> Connexion
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="btn btn-accent btn-sm px-3 fw-semibold text-white" href="{{ url_for('auth.register') }}">
+                                <i class="bi bi-person-plus me-1"></i> Inscription
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Zone des Messages Flash -->
+    <div class="container mt-3">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category if category != 'error' else 'danger' }} alert-dismissible fade show shadow-sm d-flex align-items-center" role="alert">
+                        <i class="bi {% if category == 'success' %}bi-check-circle-fill{% elif category == 'danger' or category == 'error' %}bi-exclamation-triangle-fill{% elif category == 'warning' %}bi-exclamation-circle-fill{% else %}bi-info-circle-fill{% endif %} fs-5 me-2"></i>
+                        <div>{{ message }}</div>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <!-- Contenu Principal -->
+    <main class="flex-shrink-0 mb-5">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Pied de Page Professionnel -->
+    <footer class="footer mt-auto py-4 bg-campus-dark text-white-50 border-top border-secondary">
+        <div class="container">
+            <div class="row gy-4">
+                <div class="col-lg-5 col-md-6">
+                    <div class="d-flex align-items-center mb-2">
+                        <span class="brand-icon-sm me-2 d-flex align-items-center justify-content-center text-white">
+                            <i class="bi bi-mortarboard-fill"></i>
+                        </span>
+                        <h5 class="text-white mb-0 fw-bold">Campus<span class="text-accent">Book</span></h5>
+                    </div>
+                    <p class="small text-white-50 mb-3">
+                        Système moderne et centralisé de réservation de salles pour les étudiants et équipes pédagogiques universitaires.
+                    </p>
+                    <div class="d-flex gap-2">
+                        <span class="badge bg-secondary-subtle text-secondary-emphasis border">Python Flask</span>
+                        <span class="badge bg-secondary-subtle text-secondary-emphasis border">SQLite & SQLAlchemy</span>
+                        <span class="badge bg-secondary-subtle text-secondary-emphasis border">Bootstrap 5</span>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <h6 class="text-white text-uppercase fw-semibold mb-3 fs-xs tracking-wider">Navigation rapide</h6>
+                    <ul class="list-unstyled small mb-0">
+                        <li class="mb-2"><a href="{{ url_for('main.index') }}" class="text-white-50 text-decoration-none hover-white"><i class="bi bi-chevron-right me-1"></i>Accueil</a></li>
+                        <li class="mb-2"><a href="{{ url_for('rooms.index') }}" class="text-white-50 text-decoration-none hover-white"><i class="bi bi-chevron-right me-1"></i>Catalogue des salles</a></li>
+                        <li class="mb-2"><a href="{{ url_for('reservations.create') }}" class="text-white-50 text-decoration-none hover-white"><i class="bi bi-chevron-right me-1"></i>Réserver un créneau</a></li>
+                        <li class="mb-2"><a href="{{ url_for('main.about') }}" class="text-white-50 text-decoration-none hover-white"><i class="bi bi-chevron-right me-1"></i>Architecture & Git</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-4 col-md-12">
+                    <h6 class="text-white text-uppercase fw-semibold mb-3 fs-xs tracking-wider">Horaires & Contact</h6>
+                    <p class="small text-white-50 mb-2">
+                        <i class="bi bi-clock me-2 text-accent"></i> Horaires campus : du lundi au vendredi, <strong>{{ opening_time_str }} — {{ closing_time_str }}</strong>
+                    </p>
+                    <p class="small text-white-50 mb-2">
+                        <i class="bi bi-shield-check me-2 text-accent"></i> Sécurité des données : CSRF tokenisé, mots de passe salés & hachés.
+                    </p>
+                    <p class="small text-white-50 mb-0">
+                        <i class="bi bi-mortarboard me-2 text-accent"></i> Projet académique collaboratif réalisé en binôme.
+                    </p>
+                </div>
+            </div>
+
+            <hr class="my-4 border-secondary opacity-50">
+
+            <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center small text-white-50">
+                <div>&copy; 2026 CampusBook — Système de Réservation Universitaire. Tous droits réservés.</div>
+                <div class="mt-2 mt-sm-0">
+                    Développé avec <i class="bi bi-heart-fill text-danger"></i> dans le cadre d'un projet de collaboration logicielle.
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

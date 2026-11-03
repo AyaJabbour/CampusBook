@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% block title %}Détails de la Réservation #{{ reservation.id }} — CampusBook{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="mb-3">
+                <a href="{{ url_for('reservations.dashboard') }}" class="text-decoration-none text-muted small">
+                    <i class="bi bi-arrow-left me-1"></i> Retour à mon tableau de bord
+                </a>
+            </div>
+
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="text-muted small">Identifiant de réservation :</span>
+                        <strong class="ms-1">#{{ reservation.id }}</strong>
+                    </div>
+                    <div>
+                        {% if reservation.is_confirmed %}
+                            <span class="badge badge-soft-success px-3 py-2 fs-6">
+                                <i class="bi bi-check-circle-fill me-1"></i> Réservation Confirmée
+                            </span>
+                        {% else %}
+                            <span class="badge badge-soft-danger px-3 py-2 fs-6">
+                                <i class="bi bi-x-circle-fill me-1"></i> Réservation Annulée
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="card-body p-4 p-md-5">
+                    <!-- Résumé Visuel Principal -->
+                    <div class="row g-4 mb-4 pb-4 border-bottom">
+                        <div class="col-md-6">
+                            <div class="text-muted small mb-1">Salle réservée</div>
+                            <h4 class="fw-bold mb-1 text-primary">{{ reservation.room.name }}</h4>
+                            <div class="text-muted small">
+                                <i class="bi bi-building me-1"></i> {{ reservation.room.building }} — Salle {{ reservation.room.room_number }}
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="text-muted small mb-1">Date & Créneau horaire</div>
+                            <h4 class="fw-bold mb-1">
+                                <i class="bi bi-calendar-event me-1 text-accent"></i>
+                                {{ reservation.reservation_date.strftime('%d/%m/%Y') }}
+                            </h4>
+                            <div class="text-muted small">
+                                <i class="bi bi-clock me-1"></i> De <strong>{{ reservation.start_time.strftime('%H:%M') }}</strong> à <strong>{{ reservation.end_time.strftime('%H:%M') }}</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Détails complémentaires -->
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <div class="p-3 bg-light rounded">
+                                <div class="text-muted small mb-1">Réservé par</div>
+                                <div class="fw-semibold">{{ reservation.user.full_name }}</div>
+                                <div class="text-muted small">{{ reservation.user.email }}</div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="p-3 bg-light rounded">
+                                <div class="text-muted small mb-1">Participants prévus</div>
+                                <div class="fw-semibold">{{ reservation.participants_count }} personne{{ 's' if reservation.participants_count > 1 else '' }}</div>
+                                <div class="text-muted small">Capacité totale de la salle : {{ reservation.room.capacity }} places</div>
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <div class="p-3 bg-light rounded">
+                                <div class="text-muted small mb-1">Motif de la réservation</div>
+                                <div class="text-dark">{{ reservation.purpose }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Horodatage -->
+                    <div class="d-flex justify-content-between small text-muted border-top pt-3 mb-4">
+                        <div>Créée le : {{ reservation.created_at.strftime('%d/%m/%Y à %H:%M') }}</div>
+                        <div>Dernière modification : {{ reservation.updated_at.strftime('%d/%m/%Y à %H:%M') }}</div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 pt-2 border-top">
+                        <a href="{{ url_for('reservations.dashboard') }}" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left me-1"></i> Tableau de bord
+                        </a>
+
+                        <div class="d-flex gap-2">
+                            {% if reservation.can_be_modified %}
+                                <a href="{{ url_for('reservations.edit', reservation_id=reservation.id) }}" class="btn btn-warning fw-semibold">
+                                    <i class="bi bi-pencil me-1"></i> Modifier
+                                </a>
+                            {% endif %}
+
+                            {% if reservation.can_be_cancelled %}
+                                <form method="POST" action="{{ url_for('reservations.cancel', reservation_id=reservation.id) }}" class="confirm-cancel d-inline">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <button type="submit" class="btn btn-danger fw-semibold">
+                                        <i class="bi bi-x-circle me-1"></i> Annuler la réservation
+                                    </button>
+                                </form>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

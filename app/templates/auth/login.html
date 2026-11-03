@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}Connexion — CampusBook{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-7 col-lg-5">
+            <div class="card shadow border-0">
+                <div class="card-body p-4 p-md-5">
+                    <div class="text-center mb-4">
+                        <div class="brand-icon mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; font-size: 1.5rem;">
+                            <i class="bi bi-mortarboard-fill"></i>
+                        </div>
+                        <h3 class="fw-bold mb-1">Connexion</h3>
+                        <p class="text-muted small">Accédez à votre espace CampusBook</p>
+                    </div>
+
+                    <form method="POST" novalidate>
+                        {{ form.hidden_tag() }}
+
+                        <div class="mb-3">
+                            {{ form.email.label(class="form-label") }}
+                            <div class="input-group">
+                                <span class="input-group-text bg-light text-muted"><i class="bi bi-envelope"></i></span>
+                                {{ form.email(class="form-control" + (" is-invalid" if form.email.errors else "")) }}
+                            </div>
+                            {% for error in form.email.errors %}
+                                <div class="text-danger small mt-1">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.password.label(class="form-label") }}
+                            <div class="input-group">
+                                <span class="input-group-text bg-light text-muted"><i class="bi bi-lock"></i></span>
+                                {{ form.password(class="form-control" + (" is-invalid" if form.password.errors else "")) }}
+                            </div>
+                            {% for error in form.password.errors %}
+                                <div class="text-danger small mt-1">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="mb-4 form-check">
+                            {{ form.remember_me(class="form-check-input") }}
+                            {{ form.remember_me.label(class="form-check-label small text-muted") }}
+                        </div>
+
+                        <div class="d-grid mb-3">
+                            {{ form.submit(class="btn btn-accent py-2 fw-semibold") }}
+                        </div>
+                    </form>
+
+                    <div class="text-center small text-muted">
+                        Vous n'avez pas encore de compte ? 
+                        <a href="{{ url_for('auth.register') }}" class="fw-semibold text-decoration-none">Inscrivez-vous ici</a>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <!-- Comptes de Démonstration pour tests faciles -->
+                    <div class="p-3 bg-light rounded-3 border">
+                        <div class="fw-bold text-dark small mb-2"><i class="bi bi-key-fill text-warning me-1"></i> Comptes de test rapides :</div>
+                        <div class="small text-muted mb-1">
+                            <strong>Admin :</strong> <code>admin@campusbook.fr</code> / <code>AdminPass123!</code>
+                        </div>
+                        <div class="small text-muted">
+                            <strong>Étudiant :</strong> <code>alice@campusbook.fr</code> / <code>Etudiant123!</code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
