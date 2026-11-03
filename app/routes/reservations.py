@@ -1,6 +1,7 @@
 from datetime import date, datetime
 from flask import Blueprint, render_template, redirect, url_for, flash, request, abort
 from flask_login import login_required, current_user
+from app.extensions import db
 from app.models.room import Room
 from app.models.reservation import Reservation
 from app.forms.reservation_forms import ReservationForm

@@ -258,3 +258,47 @@ def test_reject_inactive_room_reservation(student_user, inactive_room, app):
         )
         assert res is None
         assert "inactive" in err.lower()
+
+
+def test_edit_reservation_view_and_submit(client, student_user, sample_room, app):
+    """Vérifie l'affichage de la page de modification et la soumission d'une modification valide."""
+    tomorrow = date.today() + timedelta(days=3)
+
+    with app.app_context():
+        res, _ = ReservationService.create_reservation(
+            user_id=student_user.id,
+            room_id=sample_room.id,
+            reservation_date=tomorrow,
+            start_time=time(10, 0),
+            end_time=time(12, 0),
+            purpose="Avant modification",
+            participants_count=4
+        )
+        res_id = res.id
+
+    client.post('/login', data={'email': student_user.email, 'password': 'MotDePasse123!'})
+
+    # 1. Vérifie que GET /reservations/<id>/edit s'affiche avec code 200 (pas de NameError)
+    response_get = client.get(f'/reservations/{res_id}/edit')
+    assert response_get.status_code == 200
+    assert b"Modifier la" in response_get.data
+
+    # 2. Soumission d'une modification
+    response_post = client.post(f'/reservations/{res_id}/edit', data={
+        'room_id': sample_room.id,
+        'reservation_date': tomorrow.strftime('%Y-%m-%d'),
+        'start_time': '14:00',
+        'end_time': '16:00',
+        'participants_count': 6,
+        'purpose': 'Après modification avec succès'
+    }, follow_redirects=True)
+
+    assert response_post.status_code == 200
+    with app.app_context():
+        from app.extensions import db
+        updated = db.session.get(Reservation, res_id)
+        assert updated.start_time == time(14, 0)
+        assert updated.end_time == time(16, 0)
+        assert updated.participants_count == 6
+        assert updated.purpose == 'Après modification avec succès'
+
