@@ -240,3 +240,4 @@ class ReservationService:
             db.session.rollback()
             current_app.logger.error(f"Erreur lors de l'annulation de la réservation : {e}")
             return False, "Une erreur est survenue lors de l'annulation."
+# Service de verification des disponibilites concu par Aya Jabbour
