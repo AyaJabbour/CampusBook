@@ -89,6 +89,7 @@ def register_cli_commands(app: Flask) -> None:
     @click.option("--password", prompt=True, hide_input=True, confirmation_prompt=True)
     def create_admin(name, email, password):
         """Crée un compte administrateur en toute sécurité."""
+        db.create_all()
         clean_email = email.strip().lower()
         existing = User.query.filter_by(email=clean_email).first()
         if existing:
@@ -108,6 +109,7 @@ def register_cli_commands(app: Flask) -> None:
     @app.cli.command("seed-db")
     def seed_db():
         """Insère les données de démonstration sans créer de doublons."""
+        db.create_all()
         from datetime import date, time, timedelta
 
         # 1. Vérification / Création de l'administrateur par défaut
